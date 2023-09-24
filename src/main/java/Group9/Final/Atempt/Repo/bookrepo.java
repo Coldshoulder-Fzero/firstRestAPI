@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import Group9.Final.Atempt.Models.Book;
 
-public interface bookrepo extends CrudRepository<Book, Integer>{
+public interface BookRepo extends CrudRepository<Book, Long>{
     
 }

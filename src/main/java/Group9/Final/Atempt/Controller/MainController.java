@@ -1,40 +1,61 @@
 package Group9.Final.Atempt.Controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import Group9.Final.Atempt.Models.Book;
-import Group9.Final.Atempt.Repo.bookrepo;
+import Group9.Final.Atempt.Repo.BookRepo;
 
-@Controller
-@RequestMapping(path="/demo") // This means URL's start with /demo
+@RestController
 public class MainController {
-    @Autowired //This means to get the bean calles userRepository
-    private bookrepo BookRepository;
 
-    @PostMapping(path="/add")
-    public @ResponseBody String addNewBook (@RequestParam String name, @RequestParam String author) {
-        //@ResponseBody means the returned String is the response, not a view name
+    @Autowired
+    private BookRepo bookRepo;
 
-        //@RequestParam means it is a parameter from the Get or POST request
-
-        Book b = new Book();
-        b.setName(name);
-        b.setAuthor(author);
-        BookRepository.save(b);
-        return "Saved";
-
-    }
-
-    @GetMapping(path="/all")
-    public @ResponseBody Iterable<Book> getAllBooks() {
-        // This returns a JSON or XML with the Books
-        return BookRepository.findAll();
+    @GetMapping(value = "/")
+    public String getPage() {
+        return "Welcome";
     }
     
+    @GetMapping(value = "/books")
+    public List<Book> getBooks() {
+        Iterable<Book> bookIterable = bookRepo.findAll();
+        List<Book> bookList = new ArrayList<>();
+        bookIterable.forEach(bookList::add); // Convert Iterable to List
+        return bookList;
+    }
+
+    @PostMapping(value = "/save")
+    public String saveBook (@RequestBody Book book) {
+       bookRepo.save(book); 
+       return "Saved...";
+    }
+    @PutMapping(value = "update/{id}")
+    public String updateBook(@PathVariable long id, @RequestBody Book book){
+        Book updateBook = bookRepo.findById(id).get();
+        updateBook.setAuthor(book.getAuthor());
+        updateBook.setName(book.getName());
+        bookRepo.save(updateBook);
+        return "Updated...";
+    }
+
+    @DeleteMapping(value ="/delete/{id}")
+    public String deleteBook(@PathVariable long id){
+        Book deleteBook = bookRepo.findById(id).get();
+        bookRepo.delete(deleteBook);
+        return "Delete user with the id: "+id;
+    }
 }
