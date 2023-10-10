@@ -5,5 +5,5 @@ import Group9.Final.Atempt.Models.Book;
 
 public interface BookRepo extends JpaRepository <Book, Long>{
     List<Book> findTop10ByOrderBySoldCopiesDesc();
-    
+    List<Book> findByGenre(String genre);
 }

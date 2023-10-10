@@ -15,7 +15,7 @@ public class Book {
 
     private String author;
 
-    private String genres;
+    private String genre;
 
     private int soldCopies;
 
@@ -27,12 +27,12 @@ public class Book {
         this.soldCopies = soldCopies;
     }
 
-    public String getGenres() {
-        return this.genres;
+    public String getGenre() {
+        return this.genre;
     }
 
-    public void setGenres(String genres) {
-        this.genres = genres;
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 
     public long getId() {

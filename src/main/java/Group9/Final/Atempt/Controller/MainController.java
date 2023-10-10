@@ -22,8 +22,13 @@ import Group9.Final.Atempt.Repo.BookRepo;
 @RestController
 public class MainController {
 
+    
+    private final BookRepo bookRepo;
+
     @Autowired
-    private BookRepo bookRepo;
+    public MainController(BookRepo bookRepo) {
+        this.bookRepo = bookRepo;
+    }
 
     @GetMapping(value = "/")
     public String getPage() {
@@ -48,6 +53,8 @@ public class MainController {
         Book updateBook = bookRepo.findById(id).get();
         updateBook.setAuthor(book.getAuthor());
         updateBook.setName(book.getName());
+        updateBook.setGenre(book.getGenre());
+        updateBook.setSoldCopies(book.getSoldCopies());
         bookRepo.save(updateBook);
         return "Updated...";
     }
@@ -72,7 +79,7 @@ public class MainController {
 
         // Extract the genre from books and add them to the genreList
         bookIterable.forEach(book -> {
-            String genre = book.getGenres();
+            String genre = book.getGenre();
             genreList.add(genre);
         });
     
@@ -87,6 +94,11 @@ public class MainController {
      public List<Book> getTopSoldBooks() {
         List<Book> topSoldBooks = bookRepo.findTop10ByOrderBySoldCopiesDesc();
         return topSoldBooks;
+     }
+     @GetMapping(value = "/books-by-genre")
+     public List<Book> getBooksByGenre(@RequestParam String genre) {
+         List<Book> booksByGenre = bookRepo.findByGenre(genre);
+         return booksByGenre;
      }
      
 }
