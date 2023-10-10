@@ -14,14 +14,25 @@ public class Book {
     private String name;
 
     private String author;
-    private String Genres;
 
-    public String getGenres() {
-        return this.Genres;
+    private String genres;
+
+    private int soldCopies;
+
+    public int getSoldCopies() {
+        return this.soldCopies;
     }
 
-    public void setGenres(String Genres) {
-        this.Genres = Genres;
+    public void setSoldCopies(int soldCopies) {
+        this.soldCopies = soldCopies;
+    }
+
+    public String getGenres() {
+        return this.genres;
+    }
+
+    public void setGenres(String genres) {
+        this.genres = genres;
     }
 
     public long getId() {

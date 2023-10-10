@@ -78,4 +78,15 @@ public class MainController {
     
             return genreList;
      }
+     /*
+      * creates a list called topSoldBooks that calls the springboot call
+      bookRepo.find-top-10-ByOrder-BySoldCopiesDesc
+      each section filters the search
+      */
+     @GetMapping(value = "/top-sold-books")
+     public List<Book> getTopSoldBooks() {
+        List<Book> topSoldBooks = bookRepo.findTop10ByOrderBySoldCopiesDesc();
+        return topSoldBooks;
+     }
+     
 }
