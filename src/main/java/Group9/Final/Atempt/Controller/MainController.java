@@ -58,4 +58,24 @@ public class MainController {
         bookRepo.delete(deleteBook);
         return "Delete user with the id: "+id;
     }
+    
+    /* 
+    *  basic/old features ^
+     * implementing new features
+     * newer and more detailed featured v 
+     */
+
+     @GetMapping(value = "/genre")
+     public List<String> getGenres() {
+        Iterable<Book> bookIterable = bookRepo.findAll();
+        List<String> genreList = new ArrayList<>();
+
+        // Extract the genre from books and add them to the genreList
+        bookIterable.forEach(book -> {
+            String genre = book.getGenres();
+            genreList.add(genre);
+        });
+    
+            return genreList;
+     }
 }

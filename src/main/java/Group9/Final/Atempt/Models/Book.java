@@ -14,6 +14,15 @@ public class Book {
     private String name;
 
     private String author;
+    private String Genres;
+
+    public String getGenres() {
+        return this.Genres;
+    }
+
+    public void setGenres(String Genres) {
+        this.Genres = Genres;
+    }
 
     public long getId() {
         return this.id;
