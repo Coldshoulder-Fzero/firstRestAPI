@@ -2,8 +2,9 @@ package Group9.Final.Atempt.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,16 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Group9.Final.Atempt.Models.Book;
 import Group9.Final.Atempt.Repo.BookRepo;
+import Group9.Final.Atempt.Service.BookService;
 
 @RestController
 public class MainController {
 
     
     private final BookRepo bookRepo;
+    private final BookService bookService;
 
     @Autowired
-    public MainController(BookRepo bookRepo) {
+    public MainController(BookRepo bookRepo, BookService bookService) {
         this.bookRepo = bookRepo;
+        this.bookService = bookService;
     }
 
     @GetMapping(value = "/")
@@ -100,5 +104,19 @@ public class MainController {
          List<Book> booksByGenre = bookRepo.findByGenre(genre);
          return booksByGenre;
      }
+     @GetMapping(value = "/books-by-rating")
+     public ResponseEntity<List<Book>> getBooksByRating(@RequestParam int rating) {
+         List<Book> booksByRating = bookService.getBooksByRating(rating);
+         return ResponseEntity.ok(booksByRating);
+     }
+
+     @PutMapping(value = "/discount-books")
+     public ResponseEntity<String> discountBooksByPublisher(@RequestParam String publisher, @RequestParam double discountPercent) {
+       
+            bookService.discountBooksByPublisher(publisher, discountPercent);
+            return ResponseEntity.ok("Discount applied to books from publisher: " + publisher);
+              
+     }
      
+
 }

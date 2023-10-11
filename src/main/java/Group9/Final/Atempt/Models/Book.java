@@ -19,6 +19,46 @@ public class Book {
 
     private int soldCopies;
 
+    private int rating;
+    
+    private String publisher;
+
+    private double discountPercent;
+
+    private double price;
+
+    public double getPrice() {
+        return this.price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getPublisher() {
+        return this.publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public double getDiscountPercent() {
+        return this.discountPercent;
+    }
+
+    public void setDiscountPercent(double discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    public int getRating() {
+        return this.rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
     public int getSoldCopies() {
         return this.soldCopies;
     }

@@ -17,5 +17,19 @@ public class BookService {
     public List<Book> getTop10BestSoldBooks() {
         return bookRepo.findTop10ByOrderBySoldCopiesDesc();
     }
+    
+    public List<Book> getBooksByRating(int rating) {
+    
+            return bookRepo.findByRatingGreaterThanEqual(rating);
+       
+    }
 
+    public void discountBooksByPublisher(String publisher, double discountPercent){
+        List<Book> books = bookRepo.findByPublisher(publisher);
+        for (Book book : books) {
+            double discountPrice = book.getPrice() * (1 - discountPercent / 100);
+            book.setPrice(discountPrice);
+        }
+        bookRepo.saveAll(books);
+    }
 }
