@@ -3,8 +3,9 @@ package Group9.Final.Atempt.Controller;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import Group9.Final.Atempt.Models.Book;
 import Group9.Final.Atempt.Repo.BookRepo;
+import Group9.Final.Atempt.Service.BookService;
 
 import Group9.Final.Atempt.Models.Cart;
 import Group9.Final.Atempt.Repo.CartRepo;
@@ -25,10 +27,16 @@ import Group9.Final.Atempt.Repo.CartRepo;
 @RestController
 public class MainController {
 
-    @Autowired
-    private BookRepo bookRepo;
-    @Autowired
+    
+    private final BookRepo bookRepo;
+    private final BookService bookService;
     private CartRepo cartRepo;
+    @Autowired
+    public MainController(BookRepo bookRepo, BookService bookService, CartRepo cartRepo) {
+        this.bookRepo = bookRepo;
+        this.bookService = bookService;
+        this.cartRepo = cartRepo;
+    }
 
     @GetMapping(value = "/")
     public String getPage() {
@@ -53,6 +61,8 @@ public class MainController {
         Book updateBook = bookRepo.findById(id).get();
         updateBook.setAuthor(book.getAuthor());
         updateBook.setName(book.getName());
+        updateBook.setGenre(book.getGenre());
+        updateBook.setSoldCopies(book.getSoldCopies());
         bookRepo.save(updateBook);
         return "Updated...";
     }
@@ -194,5 +204,53 @@ public class MainController {
             return 0;
         }
     }
+    
+    /* 
+    *  basic/old features ^
+     * implementing new features
+     * newer and more detailed featured v 
+     */
 
+     @GetMapping(value = "/genre")
+     public List<String> getGenres() {
+        Iterable<Book> bookIterable = bookRepo.findAll();
+        List<String> genreList = new ArrayList<>();
+
+        // Extract the genre from books and add them to the genreList
+        bookIterable.forEach(book -> {
+            String genre = book.getGenre();
+            genreList.add(genre);
+        });
+    
+            return genreList;
+     }
+     /*
+      * creates a list called topSoldBooks that calls the springboot call
+      bookRepo.find-top-10-ByOrder-BySoldCopiesDesc
+      each section filters the search
+      */
+     @GetMapping(value = "/top-sold-books")
+     public List<Book> getTopSoldBooks() {
+        List<Book> topSoldBooks = bookRepo.findTop10ByOrderBySoldCopiesDesc();
+        return topSoldBooks;
+     }
+     @GetMapping(value = "/books-by-genre")
+     public List<Book> getBooksByGenre(@RequestParam String genre) {
+         List<Book> booksByGenre = bookRepo.findByGenre(genre);
+         return booksByGenre;
+     }
+     @GetMapping(value = "/books-by-rating")
+     public ResponseEntity<List<Book>> getBooksByRating(@RequestParam int rating) {
+         List<Book> booksByRating = bookService.getBooksByRating(rating);
+         return ResponseEntity.ok(booksByRating);
+     }
+
+     @PutMapping(value = "/discount-books")
+     public ResponseEntity<String> discountBooksByPublisher(@RequestParam String publisher, @RequestParam double discountPercent) {
+       
+            bookService.discountBooksByPublisher(publisher, discountPercent);
+            return ResponseEntity.ok("Discount applied to books from publisher: " + publisher);
+              
+     }
+  
 }
