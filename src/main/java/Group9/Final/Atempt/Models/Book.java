@@ -17,7 +17,13 @@ public class Book {
 
     private String genre;
 
+    private String description;
+
     private int soldCopies;
+    
+    private long isbn;
+
+    private long yearPublished;
 
     private int rating;
     
@@ -41,6 +47,14 @@ public class Book {
 
     public void setPublisher(String publisher) {
         this.publisher = publisher;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public double getDiscountPercent() {
@@ -83,6 +97,22 @@ public class Book {
         this.id = id;
     }
 
+    public long getIsbn() {
+        return this.isbn;
+    }
+
+    public void setIsbn(long isbn) {
+        this.isbn = isbn;
+    }
+
+    public long getYearPublished() {
+        return this.yearPublished;
+    }
+
+    public void setYearPublished(long yearPublished) {
+        this.yearPublished = yearPublished;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -100,6 +130,7 @@ public class Book {
     }
     
     public String toString() {
-        return "[bookid: " + this.id + ", name: " + this.name + ", author: " + this.author + ", price: " + this.price + "]";
+        return "[ISBN: " + this.isbn + ", name: " + this.name + ", description: " + this.description + ", price: " + this.price + 
+                ", author: " + this.author + ", genre: " + this.genre + ", publisher: " + this.publisher + ", year published: " + this.yearPublished + ", copies sold: " + this.soldCopies + "]";
     }
 }
