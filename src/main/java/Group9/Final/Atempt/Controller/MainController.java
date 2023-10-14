@@ -1,5 +1,6 @@
 package Group9.Final.Atempt.Controller;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,18 +64,8 @@ public class MainController {
         return "Delete user with the id: "+id;
     }
 
-    // my feature
-
-    /*@PostMapping(value = "/cartsave")
-    public String saveCart(@RequestBody Cart cart) {
-       cartRepo.save(cart);
-       return "Saved Cart...";
-    }*/
-
     @PostMapping(value = "/cart/{userid}/add/{id}")
-    public String cartAdd(@PathVariable long userid, @PathVariable long id) {  
-        // it works!!
-        // however, it puts in book ids for books that might not exist
+    public String cartAdd(@PathVariable long userid, @PathVariable long id) { 
         if (!cartRepo.existsById(userid)) { // if user cart doesnt exist
             cartRepo.save(new Cart(userid, ""));
             // System.out.println("i have saved a new cart for this user");
@@ -86,36 +77,70 @@ public class MainController {
         ArrayList<Long> bookIds = new ArrayList<>();
         String[] bookIdStrings = listOfBooksString.split(","); // convert to string array
 
-        try{
+        try {
             for (String bookIdString : bookIdStrings) {
                 if(!(bookIdString.isEmpty())){
                     long bookId = Long.parseLong(bookIdString);
-                    // System.out.print("okayyyy");
                     bookIds.add(bookId);  // add book to arraylist
                 }
             }
-            // System.out.println("made progress");
-            bookIds.add(id); // add latest book 
 
-            // System.out.println("did that");
+            if (bookRepo.existsById(id)){
+                bookIds.add(id); // add latest book if it exists in our book repository
+            } else {
+                return "That book does not exist in our book repository, please try again.";
+            }
+
             String updatedListOfBooksString = String.join(",", bookIds.stream().map(Object::toString).toArray(String[]::new));
             userCart.setListOfBooks(updatedListOfBooksString); // put string back into databae
             cartRepo.save(userCart); // Save the updated Cart object
 
             return "Book saved in cart...";
-        } catch(Exception e){
+        } catch(Exception e) {
             return "couldnt do it sorry";
         }
     }
 
+    @PostMapping(value = "/cart/{userid}/delete/{id}")
+    public String cartDelete(@PathVariable long userid, @PathVariable long id) {
+        if (!cartRepo.existsById(userid)) { // if user cart doesnt exist
+            cartRepo.save(new Cart(userid, ""));
+            return "This cart is empty";
+        }
+
+        Cart userCart = cartRepo.findById(userid).get(); // gets userCart
+        String listOfBooksString =  userCart.getListOfBooks(); //get list of books
+
+        ArrayList<Long> bookIds = new ArrayList<>();
+        String[] bookIdStrings = listOfBooksString.split(","); // convert to string array
+
+        try {
+            for (String bookIdString : bookIdStrings) {
+                if(!(bookIdString.isEmpty())){
+                    long bookId = Long.parseLong(bookIdString);
+                    bookIds.add(bookId);  // add book to arraylist
+                }
+            }
+            bookIds.remove(id); // add latest book 
+
+            String updatedListOfBooksString = String.join(",", bookIds.stream().map(Object::toString).toArray(String[]::new));
+            userCart.setListOfBooks(updatedListOfBooksString); // put string back into databae
+            cartRepo.save(userCart); // Save the updated Cart object
+
+            return "Book deleted from cart...";
+        } catch(Exception e) {
+            return "Could not delete book from cart";
+        }
+    }
+
+
     @GetMapping(value = "/cart/{userid}")
     public ArrayList<String> getCart(@PathVariable long userid) {
-        // this works as well !
         if (!cartRepo.existsById(userid)) { // if user cart doesnt exist
             cartRepo.save(new Cart(userid, ""));
         } 
 
-        try{
+        try {
             Cart userCart = cartRepo.findById(userid).get(); // gets userCart
             String listOfBooksString =  userCart.getListOfBooks(); //get list of books
 
@@ -139,32 +164,35 @@ public class MainController {
         }
     }
 
-    /* @GetMapping(value = "/cart/subtotal/{id}")
+    @GetMapping(value = "/cart/subtotal/{userid}")
     public double getCartSubtotal(@PathVariable long userid) {
         if (!cartRepo.existsById(userid)) { // if user cart doesnt exist
             cartRepo.save(new Cart(userid, ""));
             return 0;
         } 
 
-        Cart userCart = cartRepo.findById(userid).get(); // gets userCart
-        String jsonList = userCart.getListOfBooks(); //get list of books in json
-        ObjectMapper objectMapper = new ObjectMapper();
-
         try {
-            // Deserialize the JSON array into an ArrayList<Book>
-            ArrayList<Book> bookList = objectMapper.readValue(jsonList, new TypeReference<ArrayList<Book>>() {});
+            Cart userCart = cartRepo.findById(userid).get(); // gets userCart
+            String listOfBooksString =  userCart.getListOfBooks(); //get list of books
+
+            ArrayList<Long> bookIds = new ArrayList<>();
+            String[] bookIdStrings = listOfBooksString.split(","); // convert to arraylist<long> with book ids
+            for (String bookIdString : bookIdStrings) {
+                long bookId = Long.parseLong(bookIdString);
+                bookIds.add(bookId);  // add bookid to arraylist<long>
+            }
+
             double sum = 0;
-            for (Book book : bookList) {
+            for (Long id : bookIds) {
+                Book book = bookRepo.findById(id).get();
                 sum += book.getPrice();
             }
             return sum;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return 404; // Handle the exception or return an empty list as needed
+            return 0;
         }
     }
-    */
-
 
 }
