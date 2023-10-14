@@ -1,5 +1,6 @@
 package Group9.Final.Atempt.Controller;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import Group9.Final.Atempt.Models.Book;
 import Group9.Final.Atempt.Repo.BookRepo;
 import Group9.Final.Atempt.Service.BookService;
+
+import Group9.Final.Atempt.Models.Cart;
+import Group9.Final.Atempt.Repo.CartRepo;
 
 @RestController
 public class MainController {
@@ -27,11 +30,12 @@ public class MainController {
     
     private final BookRepo bookRepo;
     private final BookService bookService;
-
+    private CartRepo cartRepo;
     @Autowired
-    public MainController(BookRepo bookRepo, BookService bookService) {
+    public MainController(BookRepo bookRepo, BookService bookService, CartRepo cartRepo) {
         this.bookRepo = bookRepo;
         this.bookService = bookService;
+        this.cartRepo = cartRepo;
     }
 
     @GetMapping(value = "/")
@@ -68,6 +72,137 @@ public class MainController {
         Book deleteBook = bookRepo.findById(id).get();
         bookRepo.delete(deleteBook);
         return "Delete user with the id: "+id;
+    }
+
+    @PostMapping(value = "/cart/{userid}/add/{id}")
+    public String cartAdd(@PathVariable long userid, @PathVariable long id) { 
+        if (!cartRepo.existsById(userid)) { // if user cart doesnt exist
+            cartRepo.save(new Cart(userid, ""));
+            // System.out.println("i have saved a new cart for this user");
+        }
+
+        Cart userCart = cartRepo.findById(userid).get(); // gets userCart
+        String listOfBooksString =  userCart.getListOfBooks(); //get list of books
+
+        ArrayList<Long> bookIds = new ArrayList<>();
+        String[] bookIdStrings = listOfBooksString.split(","); // convert to string array
+
+        try {
+            for (String bookIdString : bookIdStrings) {
+                if(!(bookIdString.isEmpty())){
+                    long bookId = Long.parseLong(bookIdString);
+                    bookIds.add(bookId);  // add book to arraylist
+                }
+            }
+
+            if (bookRepo.existsById(id)){
+                bookIds.add(id); // add latest book if it exists in our book repository
+            } else {
+                return "That book does not exist in our book repository, please try again.";
+            }
+
+            String updatedListOfBooksString = String.join(",", bookIds.stream().map(Object::toString).toArray(String[]::new));
+            userCart.setListOfBooks(updatedListOfBooksString); // put string back into databae
+            cartRepo.save(userCart); // Save the updated Cart object
+
+            return "Book saved in cart...";
+        } catch(Exception e) {
+            return "couldnt do it sorry";
+        }
+    }
+
+    @PostMapping(value = "/cart/{userid}/delete/{id}")
+    public String cartDelete(@PathVariable long userid, @PathVariable long id) {
+        if (!cartRepo.existsById(userid)) { // if user cart doesnt exist
+            cartRepo.save(new Cart(userid, ""));
+            return "This cart is empty";
+        }
+
+        Cart userCart = cartRepo.findById(userid).get(); // gets userCart
+        String listOfBooksString =  userCart.getListOfBooks(); //get list of books
+
+        ArrayList<Long> bookIds = new ArrayList<>();
+        String[] bookIdStrings = listOfBooksString.split(","); // convert to string array
+
+        try {
+            for (String bookIdString : bookIdStrings) {
+                if(!(bookIdString.isEmpty())){
+                    long bookId = Long.parseLong(bookIdString);
+                    bookIds.add(bookId);  // add book to arraylist
+                }
+            }
+            bookIds.remove(id); // add latest book 
+
+            String updatedListOfBooksString = String.join(",", bookIds.stream().map(Object::toString).toArray(String[]::new));
+            userCart.setListOfBooks(updatedListOfBooksString); // put string back into databae
+            cartRepo.save(userCart); // Save the updated Cart object
+
+            return "Book deleted from cart...";
+        } catch(Exception e) {
+            return "Could not delete book from cart";
+        }
+    }
+
+
+    @GetMapping(value = "/cart/{userid}")
+    public ArrayList<String> getCart(@PathVariable long userid) {
+        if (!cartRepo.existsById(userid)) { // if user cart doesnt exist
+            cartRepo.save(new Cart(userid, ""));
+        } 
+
+        try {
+            Cart userCart = cartRepo.findById(userid).get(); // gets userCart
+            String listOfBooksString =  userCart.getListOfBooks(); //get list of books
+
+            ArrayList<Long> bookIds = new ArrayList<>();
+            String[] bookIdStrings = listOfBooksString.split(","); // convert to arraylist<long> with book ids
+            for (String bookIdString : bookIdStrings) {
+                long bookId = Long.parseLong(bookIdString);
+                bookIds.add(bookId);  // add bookid to arraylist<long>
+            }
+
+            ArrayList<String> bookList = new ArrayList<>();
+            for (Long id : bookIds) {
+                Book book = bookRepo.findById(id).get();
+                bookList.add(book.toString());
+            }
+            
+            return bookList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>(); // Handle the exception or return an empty list as needed
+        }
+    }
+
+    @GetMapping(value = "/cart/subtotal/{userid}")
+    public double getCartSubtotal(@PathVariable long userid) {
+        if (!cartRepo.existsById(userid)) { // if user cart doesnt exist
+            cartRepo.save(new Cart(userid, ""));
+            return 0;
+        } 
+
+        try {
+            Cart userCart = cartRepo.findById(userid).get(); // gets userCart
+            String listOfBooksString =  userCart.getListOfBooks(); //get list of books
+
+            ArrayList<Long> bookIds = new ArrayList<>();
+            String[] bookIdStrings = listOfBooksString.split(","); // convert to arraylist<long> with book ids
+            for (String bookIdString : bookIdStrings) {
+                long bookId = Long.parseLong(bookIdString);
+                bookIds.add(bookId);  // add bookid to arraylist<long>
+            }
+
+            double sum = 0;
+            for (Long id : bookIds) {
+                Book book = bookRepo.findById(id).get();
+                sum += book.getPrice();
+            }
+            return sum;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
     
     /* 
@@ -117,6 +252,5 @@ public class MainController {
             return ResponseEntity.ok("Discount applied to books from publisher: " + publisher);
               
      }
-     
-
+  
 }

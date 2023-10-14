@@ -99,4 +99,7 @@ public class Book {
         this.author = author;
     }
     
+    public String toString() {
+        return "[bookid: " + this.id + ", name: " + this.name + ", author: " + this.author + ", price: " + this.price + "]";
+    }
 }
