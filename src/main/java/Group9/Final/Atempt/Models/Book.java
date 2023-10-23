@@ -25,7 +25,7 @@ public class Book {
 
     private long yearPublished;
 
-    private int rating;
+    private long rating;
     
     private String publisher;
 
@@ -65,11 +65,11 @@ public class Book {
         this.discountPercent = discountPercent;
     }
 
-    public int getRating() {
+    public long getRating() {
         return this.rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(long rating) {
         this.rating = rating;
     }
 
