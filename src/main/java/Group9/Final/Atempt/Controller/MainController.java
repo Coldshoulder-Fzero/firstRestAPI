@@ -230,28 +230,40 @@ public class MainController {
       bookRepo.find-top-10-ByOrder-BySoldCopiesDesc
       each section filters the search
       */
-     @GetMapping(value = "/top-sold-books")
-     public List<Book> getTopSoldBooks() {
-        List<Book> topSoldBooks = bookRepo.findTop10ByOrderBySoldCopiesDesc();
-        return topSoldBooks;
-     }
-     @GetMapping(value = "/books-by-genre")
-     public List<Book> getBooksByGenre(@RequestParam String genre) {
-         List<Book> booksByGenre = bookRepo.findByGenre(genre);
-         return booksByGenre;
-     }
-     @GetMapping(value = "/books-by-rating")
-     public ResponseEntity<List<Book>> getBooksByRating(@RequestParam int rating) {
-         List<Book> booksByRating = bookService.getBooksByRating(rating);
-         return ResponseEntity.ok(booksByRating);
-     }
+        // Mapping for the endpoint to get the top sold books.
+        @GetMapping(value = "/top-sold-books")
+        public List<Book> getTopSoldBooks() {
+            // Fetch the top 10 sold books from the repository and store them in a list.
+            List<Book> topSoldBooks = bookRepo.findTop10ByOrderBySoldCopiesDesc();
+            // Return the list of top sold books.
+            return topSoldBooks;
+        }
 
-     @PutMapping(value = "/discount-books")
-     public ResponseEntity<String> discountBooksByPublisher(@RequestParam String publisher, @RequestParam double discountPercent) {
-       
+        // Mapping for the endpoint to get books filtered by a specific genre.
+        @GetMapping(value = "/books-by-genre")
+        public List<Book> getBooksByGenre(@RequestParam String genre) {
+            // Fetch the books matching the provided genre from the repository.
+            List<Book> booksByGenre = bookRepo.findByGenre(genre);
+            // Return the list of books filtered by genre.
+            return booksByGenre;
+        }
+
+        // Mapping for the endpoint to get books based on their rating.
+        @GetMapping(value = "/books-by-rating")
+        public ResponseEntity<List<Book>> getBooksByRating(@RequestParam int rating) {
+            // Fetch the books that match the given rating from the service layer.
+            List<Book> booksByRating = bookService.getBooksByRating(rating);
+            // Return the list of books within a ResponseEntity with an OK status.
+            return ResponseEntity.ok(booksByRating);
+        }
+
+        // Mapping for the endpoint to apply discounts to books based on their publisher.
+        @PutMapping(value = "/discount-books")
+        public ResponseEntity<String> discountBooksByPublisher(@RequestParam String publisher, @RequestParam double discountPercent) {
+            // Call the service layer to apply the discount to books from a specific publisher.
             bookService.discountBooksByPublisher(publisher, discountPercent);
+            // Return a ResponseEntity with a message confirming the application of the discount.
             return ResponseEntity.ok("Discount applied to books from publisher: " + publisher);
-              
-     }
+        }
   
 }
