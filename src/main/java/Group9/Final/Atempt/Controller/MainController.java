@@ -3,6 +3,8 @@ package Group9.Final.Atempt.Controller;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,26 +20,37 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import Group9.Final.Atempt.Models.Book;
+import Group9.Final.Atempt.Models.Profile;
 import Group9.Final.Atempt.Repo.BookRepo;
+import Group9.Final.Atempt.Repo.ProfileRepo;
 import Group9.Final.Atempt.Service.BookService;
+import Group9.Final.Atempt.Service.ProfileService;
+
+    
+@ComponentScan("Group9.Final.Atempt.Repo")
+    
 
 @RestController
+@RequestMapping(path="/geektext")
 public class MainController {
 
     
     private final BookRepo bookRepo;
     private final BookService bookService;
+    private final ProfileRepo profileRepo;
+    private final ProfileService profileService; 
+
 
     @Autowired
-    public MainController(BookRepo bookRepo, BookService bookService) {
+    public MainController(BookRepo bookRepo, BookService bookService, ProfileRepo profileRepo, ProfileService profileService) {
         this.bookRepo = bookRepo;
         this.bookService = bookService;
+        this.profileRepo = profileRepo;
+        this.profileService = profileService;
+
     }
 
-    @GetMapping(value = "/")
-    public String getPage() {
-        return "Welcome";
-    }
+    
     
     @GetMapping(value = "/books")
     public List<Book> getBooks() {
@@ -117,6 +130,52 @@ public class MainController {
             return ResponseEntity.ok("Discount applied to books from publisher: " + publisher);
               
      }
-     
 
+    /**
+     * PROFILE MAPPING
+     */
+    @PostMapping(value = "/create-profile/{username}/{full_name}/{email_address}/{home_address}/{password}")
+    public String createProfile(@PathVariable String username, @PathVariable String full_name, @PathVariable String email_address, @PathVariable String home_address, @PathVariable String password){
+            profileService.createProfile(username, full_name, email_address, home_address, password);
+            return "profile has been created";
+        }
+
+    @GetMapping(value = "/find-profile/{username}")
+    public String findUser(@PathVariable String username){ //respone entity
+        List<Profile> pl = profileService.findProfileByUsername(username);
+        return pl.toString();
+    }
+
+    @PutMapping(value = "/update-profile-full-name/{username}-{full_name}")
+    public String updateFullName(@PathVariable String username, @PathVariable String full_name){
+        profileService.updateFullName(username, full_name);
+        return "Successfully updated full name";
+    }
+
+    @PutMapping(value = "update-profile-username/{username}-{usrname}")
+    public String updateUsername(@PathVariable String username, @PathVariable String usrname){
+        profileService.updateUsername(username, usrname);
+        return "Successfully updated username";
+    }
+
+    @PutMapping(value = "update-profile-home-address/{username}-{home_address}")
+    public String updateHomeAddress(@PathVariable String username, @PathVariable String home_address){
+        profileService.updateHomeAddress(username, home_address);
+        return "Successfully updated home address";
+    }
+
+    @PutMapping(value = "update-profile-password/{username}-{password}")
+    public String updatePassword(@PathVariable String username, @PathVariable String password){
+        profileService.updatePassword(username, password);
+        return "Successfully updated password";
+    }
+
+    @DeleteMapping(value = "delete-profile/{username}/{password}")
+    public String deleteProfile(@PathVariable String username, @PathVariable String password){
+        profileService.deleteProfile(username, password);
+        return "profile successfully deleted";
+    }
+    
+
+    
 }
