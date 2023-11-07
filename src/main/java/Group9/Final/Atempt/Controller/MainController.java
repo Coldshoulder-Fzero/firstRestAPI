@@ -171,14 +171,14 @@ public ResponseEntity<String> createProfile(@RequestBody Profile profile) {
     }
 
     @DeleteMapping(value = "delete-profile/{username}")
-public ResponseEntity<String> deleteProfile(@PathVariable String username) {
-    boolean deleted = profileService.deleteProfile(username);
-    if (deleted) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile not found");
+    public ResponseEntity<String> deleteProfile(@PathVariable String username) {
+        boolean deleted = profileService.deleteProfile(username);
+            if (deleted) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile not found");
+        }
     }
     
-
     
 }
