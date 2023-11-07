@@ -280,7 +280,7 @@ public class MainController {
 
 
     @PostMapping(value = "/wishlist/personid/delete/{bookid}")
-    public ResponseEntity<String> deleteBookWishlist(@RequestParam long iD, @RequestParam long id) {
+    public ResponseEntity<String> deleteBookWishlist(@RequestParam long iD, @RequestParam long id)  {
         wishlistService.retrievedPersonID();
         return ResponseEntity.ok("Book deleted from Wishlist");
     }
