@@ -1,19 +1,14 @@
 package Group9.Final.Atempt.Service;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import Group9.Final.Atempt.Models.Profile;
 import Group9.Final.Atempt.Repo.ProfileRepo;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
-
-
-
 @Service
 public class ProfileService{
     private final ProfileRepo profileRepo; 
@@ -68,20 +63,32 @@ public class ProfileService{
         }
     }
 
-    public void updateUsername(String username, String usrname){
-        boolean exist = profileRepo.existsById(username);
-        if (exist){
-            profileRepo.updateUsername(username, usrname);
-        } else {
-            System.out.println("Profile does not exist");
+    @Transactional
+    public void updateUsername(String oldUsername, String newUsername) {
+        if (StringUtils.isAnyBlank(oldUsername, newUsername)) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
         }
+
+        Profile existingProfile = profileRepo.findById(oldUsername).orElse(null);
+        if (existingProfile == null) {
+            throw new IllegalArgumentException("Profile with old username does not exist");
+        }
+
+        Profile newProfile = profileRepo.findById(newUsername).orElse(null);
+        if (newProfile != null) {
+            throw new IllegalArgumentException("New username already exists");
+        }
+
+        existingProfile.setUsername(newUsername);
+        profileRepo.save(existingProfile);
     }
 
 
 
-    public void deleteProfile(String username, String password){
-        boolean verification; 
+    public boolean deleteProfile(String username){
+        //boolean verification; 
         //if password & username exist on the same account, delete profile
         profileRepo.deleteById(username);
+        return true;
     }
 }

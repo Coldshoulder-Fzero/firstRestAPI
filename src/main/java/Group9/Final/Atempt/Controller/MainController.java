@@ -134,10 +134,10 @@ public class MainController {
     /**
      * PROFILE MAPPING
      */
-    @PostMapping(value = "/create-profile/{username}/{full_name}/{email_address}/{home_address}/{password}")
-    public String createProfile(@PathVariable String username, @PathVariable String full_name, @PathVariable String email_address, @PathVariable String home_address, @PathVariable String password){
-            profileService.createProfile(username, full_name, email_address, home_address, password);
-            return "profile has been created";
+    @PostMapping(value = "/create-profile")
+public ResponseEntity<String> createProfile(@RequestBody Profile profile) {
+            profileService.createProfile(profile.getUsername(), profile.getFullName(), profile.getEmail(), profile.getAddress(), profile.getPassword());
+            return ResponseEntity.status(HttpStatus.CREATED).body("Profile has been created");
         }
 
     @GetMapping(value = "/find-profile/{username}")
@@ -170,10 +170,13 @@ public class MainController {
         return "Successfully updated password";
     }
 
-    @DeleteMapping(value = "delete-profile/{username}/{password}")
-    public String deleteProfile(@PathVariable String username, @PathVariable String password){
-        profileService.deleteProfile(username, password);
-        return "profile successfully deleted";
+    @DeleteMapping(value = "delete-profile/{username}")
+public ResponseEntity<String> deleteProfile(@PathVariable String username) {
+    boolean deleted = profileService.deleteProfile(username);
+    if (deleted) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile not found");
     }
     
 

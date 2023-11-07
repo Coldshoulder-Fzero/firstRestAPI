@@ -1,18 +1,24 @@
 package Group9.Final.Atempt.Models;
+
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
+@Table(name="Profile")
 public class Profile{
-    @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
 
+    @Id
+    @Column(name="username")
     private String username;
+    @Column(name="full_name")
     private String full_name;
+    @Column(name="email_address")
     private String email_address;
+    @Column(name="home_address")
     private String home_address;
+    @Column(name="password")
     private String password;
 
     public Profile() {
@@ -67,13 +73,13 @@ public class Profile{
         this.password = pswd;
     }
 
-    public String toString(){
+    public String toString() {
         String str = 
-        "\nUsername : " + this.username +
-        "\nPassword : " + this.password +
-        "\nFull Name : " + this.full_name + 
-        "\nEmail Address : " + this.email_address +
-        "\nHome Address : " + this.home_address + "\n";
+            "\nUsername : " + (this.username != null ? this.username : "N/A") +
+            "\nPassword : " + (this.password != null ? this.password : "N/A") +
+            "\nFull Name : " + (this.full_name != null ? this.full_name : "N/A") + 
+            "\nEmail Address : " + (this.email_address != null ? this.email_address : "N/A") +
+            "\nHome Address : " + (this.home_address != null ? this.home_address : "N/A") + "\n";
         return str;
     }
 }
