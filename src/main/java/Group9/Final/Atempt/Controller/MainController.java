@@ -25,6 +25,8 @@ import Group9.Final.Atempt.Repo.BookRepo;
 import Group9.Final.Atempt.Repo.ProfileRepo;
 import Group9.Final.Atempt.Service.BookService;
 import Group9.Final.Atempt.Service.ProfileService;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 
     
 @ComponentScan("Group9.Final.Atempt.Repo")
@@ -179,6 +181,12 @@ public ResponseEntity<String> createProfile(@RequestBody Profile profile) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile not found");
         }
     }
+
+    @RequestMapping(value="/error")
+    public String errorMapping() {
+        return "error";
+    }
+    
     
     
 }

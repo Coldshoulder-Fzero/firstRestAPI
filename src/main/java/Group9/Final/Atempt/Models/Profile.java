@@ -21,6 +21,7 @@ public class Profile{
     @Column(name="password")
     private String password;
 
+
     public Profile() {
         // Default constructor required by JPA
     }
@@ -72,6 +73,8 @@ public class Profile{
     public void setPassword(String pswd){
         this.password = pswd;
     }
+
+    public void addCreditCard(){}
 
     public String toString() {
         String str = 

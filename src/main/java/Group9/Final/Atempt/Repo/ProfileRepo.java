@@ -1,8 +1,8 @@
 
 package Group9.Final.Atempt.Repo;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Repository
-public interface ProfileRepo extends JpaRepository <Profile, String>{
+public interface ProfileRepo extends CrudRepository <Profile, String>{
     //find profile
     @Query(value = "SELECT u FROM Profile u WHERE u.username IN :username", 
     nativeQuery = true)
