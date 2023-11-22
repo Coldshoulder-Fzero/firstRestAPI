@@ -265,24 +265,30 @@ public class MainController {
 
     }
 
-    @GetMapping(value = "/wishlist/{iD}")
-    public ResponseEntity<String> getWishlist(@RequestParam long iD) {
-        wishlistService.retrievedPersonID();
-        return ResponseEntity.ok("Retrieved Wishlist");
+    @PostMapping(value = "/personID/{userID}/wishlistName/{wishlistName}")
+    public ResponseEntity<String> getWishlist(@RequestParam long iD, @RequestParam String wishlistName) {
+        wishlistService.createWishlist(iD, wishlistName);
+        return ResponseEntity.ok("Wishlist Created");
     }
 
 
-    @PostMapping(value = "/cart/{useriD}/add/{bookid}")
-    public ResponseEntity<String> addBookWishlist(@RequestParam long iD, long id) {
-        wishlistService.retrievedPersonID();
+    @PostMapping(value = "/userID/{iD}/wishlistId/{wishlistID}/ADDbookID/{bookID}/")
+    public ResponseEntity<String> addBookWishlist(@RequestParam long iD, String wishlistName, Long bookID) {
+        wishlistService.addBookToWishlist(iD, wishlistName, bookID);
         return ResponseEntity.ok("Book added to Wishlist");
     }
 
 
-    @PostMapping(value = "/wishlist/personid/delete/{bookid}")
-    public ResponseEntity<String> deleteBookWishlist(@RequestParam long iD, @RequestParam long id)  {
-        wishlistService.retrievedPersonID();
+    @DeleteMapping(value = "/userID/{iD}/wishlistId/{wishlistID}/DELETEbookID/{bookID}/")
+    public ResponseEntity<String> deleteBookWishlist(@RequestParam long iD, @RequestParam String wishlistName, long bookID)  {
+        wishlistService.removeBookFromWishlist(iD, wishlistName, bookID);
         return ResponseEntity.ok("Book deleted from Wishlist");
+    }
+
+    @GetMapping(value = "/userID/{iD}/SHOWwishlist/{wishlistName}/")
+    public ResponseEntity<String> showBookWishlist(@RequestParam long iD, @RequestParam String wishlistName) {
+        wishlistService.getAllBooksInWishlist(iD, wishlistName);
+        return ResponseEntity.ok("Showing books in Wishlist");
     }
 }
 

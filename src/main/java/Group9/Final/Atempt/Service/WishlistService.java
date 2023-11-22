@@ -1,59 +1,64 @@
 package Group9.Final.Atempt.Service;
 
-import Group9.Final.Atempt.Models.Book;
-import Group9.Final.Atempt.Repo.BookRepo;
-import Group9.Final.Atempt.Repo.WishlistRepo;
+import Group9.Final.Atempt.Models.Wishlist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WishlistService {
 
-    private final WishlistRepo wishlistRepo;
 
     @Autowired
-    public WishlistService(WishlistRepo wishlistRepo) {
-        this.wishlistRepo = wishlistRepo;
+
+    public Map<String, Wishlist> wishlists;
+
+    public WishlistService() {
+        this.wishlists = new HashMap<>();
     }
 
-    public List<Book> retrievedPersonID() {
-        HashMap<Integer, Integer> bookToPerson = new HashMap<>();
-
-        // Store books with person IDs
-        bookToPerson.put(1, 101);
-        bookToPerson.put(2, 102);
-        bookToPerson.put(3, 101);
-        bookToPerson.put(4, 103);
-
-        // Retrieve all books associated with a specific person ID
-        int personIdToRetrieve = 101;
-        List<Integer> booksForPerson = getBooksForPerson(personIdToRetrieve, bookToPerson);
-
-        System.out.println("Books associated with Person ID " + personIdToRetrieve + ": " + booksForPerson);
-        return wishlistRepo.retrievedPersonID();
+    public void createWishlist(Long userId, String wishlistName) {
+        Wishlist wishlist = new Wishlist(userId, wishlistName);
+        wishlists.put(generateKey(userId, wishlistName), wishlist);
+        System.out.println("Wishlist created successfully: " + wishlistName);
     }
 
-    // Method to retrieve all books associated with a person ID
-    public static List<Integer> getBooksForPerson(int personId, HashMap<Integer, Integer> bookToPerson) {
-        List<Integer> booksForPerson = new ArrayList<>();
-        for (int bookId : bookToPerson.keySet()) {
-            if (bookToPerson.get(bookId) == personId) {
-                booksForPerson.add(bookId);
-            }
+    public void addBookToWishlist(Long userId, String wishlistName, Long bookID) {
+        Wishlist wishlist = wishlists.get(generateKey(userId, wishlistName));
+        if (wishlist != null) {
+            wishlist.addBook(bookID);
+        } else {
+            System.out.println("Wishlist not found: " + wishlistName);
         }
-        return booksForPerson;
     }
 
-    public static void deleteBookFromWishlist(int bookId, HashMap<Integer, Integer> bookToPerson) {
-        if (bookToPerson.containsKey(bookId)) {
-            bookToPerson.remove(bookId);
+    public void removeBookFromWishlist(Long userId, String wishlistName, Long bookID) {
+        Wishlist wishlist = wishlists.get(generateKey(userId, wishlistName));
+        if (wishlist != null) {
+            wishlist.removeBook(bookID);
+        } else {
+            System.out.println("Wishlist not found: " + wishlistName);
         }
+    }
+
+    public List<Long> getAllBooksInWishlist(Long userId, String wishlistName) {
+        Wishlist wishlist = wishlists.get(generateKey(userId, wishlistName));
+        if (wishlist != null) {
+            return wishlist.getBooks();
+        } else {
+            System.out.println("Wishlist not found: " + wishlistName);
+            return new ArrayList<>();
+        }
+    }
+    private String generateKey(Long userId, String wishlistName) {
+        return userId + "_" + wishlistName;
     }
 }
+
 
 
 
