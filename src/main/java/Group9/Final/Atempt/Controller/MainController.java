@@ -275,8 +275,7 @@ public class MainController {
     @PostMapping(value = "/userID/{iD}/wishlistId/{wishlistID}/ADDbookID/{bookID}/")
     public ResponseEntity<String> addBookWishlist(@RequestParam long iD, String wishlistName, Long bookID) {
         wishlistService.addBookToWishlist(iD, wishlistName, bookID);
-        return ResponseEntity.ok("Book added to Wishlist");
-    }
+        return ResponseEntity.ok("Book added to Wishlist");}
 
 
     @DeleteMapping(value = "/userID/{iD}/wishlistId/{wishlistID}/DELETEbookID/{bookID}/")
