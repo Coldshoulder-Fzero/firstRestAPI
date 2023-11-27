@@ -291,5 +291,51 @@ public class MainController {
         wishlistService.getAllBooksInWishlist(iD, wishlistName);
         return ResponseEntity.ok("Showing books in Wishlist");
     }
+
+    @PostMapping(value = "/create-profile")
+    public ResponseEntity<String> createProfile(@RequestBody Profile profile) {
+            profileService.createProfile(profile.getUsername(), profile.getFullName(), profile.getEmail(), profile.getAddress(), profile.getPassword());
+            return ResponseEntity.status(HttpStatus.CREATED).body("Profile has been created");
+        }
+
+    @GetMapping(value = "/find-profile/{username}")
+    public String findUser(@PathVariable String username){ //respone entity
+        List<Profile> pl = profileService.findProfileByUsername(username);
+        return pl.toString();
+    }
+
+    @PutMapping(value = "/update-profile-full-name/{username}/{full_name}")
+    public String updateFullName(@PathVariable String username, @PathVariable String full_name){
+        profileService.updateFullName(username, full_name);
+        return "Successfully updated full name";
+    }
+
+    @PutMapping(value = "update-profile-username/{username}/{usrname}")
+    public String updateUsername(@PathVariable String username, @PathVariable String usrname){
+        profileService.updateUsername(username, usrname);
+        return "Successfully updated username";
+    }
+
+    @PutMapping(value = "update-profile-home-address/{username}/{home_address}")
+    public String updateHomeAddress(@PathVariable String username, @PathVariable String home_address){
+        profileService.updateHomeAddress(username, home_address);
+        return "Successfully updated home address";
+    }
+
+    @PutMapping(value = "update-profile-password/{username}/{password}")
+    public String updatePassword(@PathVariable String username, @PathVariable String password){
+        profileService.updatePassword(username, password);
+        return "Successfully updated password";
+    }
+
+    @DeleteMapping(value = "delete-profile/{username}")
+    public ResponseEntity<String> deleteProfile(@PathVariable String username) {
+        boolean deleted = profileService.deleteProfile(username);
+            if (deleted) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile not found");
+        }
+    }
 }
 
