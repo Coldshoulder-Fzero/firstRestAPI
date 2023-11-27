@@ -64,6 +64,8 @@ public class MainController {
         updateBook.setName(book.getName());
         updateBook.setGenre(book.getGenre());
         updateBook.setSoldCopies(book.getSoldCopies());
+        updateBook.setPrice(book.getPrice());
+        updateBook.setDiscountPercent(book.getDiscountPercent());
         bookRepo.save(updateBook);
         return "Updated...";
     }
