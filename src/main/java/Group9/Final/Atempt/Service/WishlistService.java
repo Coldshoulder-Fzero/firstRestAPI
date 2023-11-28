@@ -13,7 +13,6 @@ import java.util.Map;
 public class WishlistService {
 
 
-    @Autowired
 
     public Map<String, Wishlist> wishlists;
 
